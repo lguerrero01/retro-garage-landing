@@ -195,19 +195,66 @@
     .container { max-width: 1200px; margin: 0 auto; }
 
     /* ===== STATS STRIP ===== */
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes statPop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
     #stats {
       padding: 3rem 1.5rem;
-      background: linear-gradient(90deg, var(--orange), var(--purple), var(--blue));
+      background: linear-gradient(90deg, var(--orange), var(--purple), var(--blue), var(--orange));
+      background-size: 300% 300%;
+      animation: gradientShift 7s ease infinite;
     }
     .stats-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 2rem; text-align: center;
     }
+    .stat-item {
+      opacity: 0; transform: translateY(24px) scale(0.92);
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+    .stat-item.pop { opacity: 1; transform: none; }
+    .stat-item.pop .stat-num { animation: statPop 0.55s ease; }
     .stat-num {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 3rem; line-height: 1;
     }
     .stat-label { font-size: 0.8rem; font-weight: 600; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ===== MAP ===== */
+    #map { background: var(--dark); }
+    .map-header { text-align: center; margin-bottom: 2.5rem; }
+    .map-pill {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(237,69,13,0.12); border: 1px solid rgba(237,69,13,0.25);
+      color: var(--orange); padding: 0.4rem 1.1rem;
+      border-radius: 50px; font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.8rem;
+    }
+    .map-wrapper {
+      border-radius: 24px; overflow: hidden; position: relative;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.07);
+      opacity: 0; transform: translateY(48px);
+      transition: opacity 0.85s ease, transform 0.85s cubic-bezier(0.16,1,0.3,1);
+    }
+    .map-wrapper.visible { opacity: 1; transform: none; }
+    .map-wrapper::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      border-radius: 24px;
+      box-shadow: inset 0 0 0 1.5px rgba(237,69,13,0.18), inset 0 0 50px rgba(237,69,13,0.04);
+    }
+    .map-wrapper iframe {
+      width: 100%; height: 440px; display: block;
+      filter: grayscale(15%) contrast(1.06) brightness(0.95);
+    }
+    @media (max-width: 768px) { .map-wrapper iframe { height: 300px; } }
 
     /* ===== MENU ===== */
     #menu { background: var(--gray); }
@@ -503,6 +550,7 @@
     <a href="#menu">Menú</a>
     <a href="#about">Nosotros</a>
     <a href="#gallery">Galería</a>
+    <a href="#map">Ubicación</a>
     <a href="#info">Contacto</a>
   </div>
   <a href="#download" class="nav-cta" id="nav-cta-btn">
@@ -543,10 +591,7 @@
 <section id="stats">
   <div class="container">
     <div class="stats-grid" id="stats-grid">
-      <div><div class="stat-num">100+</div><div class="stat-label">Platillos únicos</div></div>
-      <div><div class="stat-num">5★</div><div class="stat-label">Calificación</div></div>
-      <div><div class="stat-num">Retro</div><div class="stat-label">Ambiente temático</div></div>
-      <div><div class="stat-num">App</div><div class="stat-label">Ordena desde tu mesa</div></div>
+      <!-- populated by JS from restaurant_config.stats -->
     </div>
   </div>
 </section>
@@ -645,6 +690,26 @@
   </div>
 </section>
 
+<!-- MAP -->
+<section id="map">
+  <div class="container">
+    <div class="map-header reveal">
+      <div class="map-pill">📍 Ubicación</div>
+      <h2 class="section-title">CÓMO <span style="color:var(--orange)">LLEGARNOS</span></h2>
+    </div>
+    <div class="map-wrapper" id="map-wrapper">
+      <iframe
+        src="https://maps.google.com/maps?q=10.0782695,-67.7782914&z=17&output=embed"
+        frameborder="0"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Ubicación Retro Garage">
+      </iframe>
+    </div>
+  </div>
+</section>
+
 <!-- SOCIAL -->
 <section id="social">
   <div class="container">
@@ -721,6 +786,38 @@
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
 
+  // ===== DEFAULT STATS =====
+  const DEFAULT_STATS = [
+    { num: '100+', label: 'Platillos únicos' },
+    { num: '5★',   label: 'Calificación' },
+    { num: 'Retro', label: 'Ambiente temático' },
+    { num: 'App',   label: 'Ordena desde tu mesa' }
+  ];
+
+  function renderStats(stats) {
+    const grid = document.getElementById('stats-grid');
+    const items = (stats && stats.length) ? stats : DEFAULT_STATS;
+    grid.innerHTML = items.map((s, i) =>
+      `<div class="stat-item" style="transition-delay:${i * 0.1}s">
+         <div class="stat-num">${s.num}</div>
+         <div class="stat-label">${s.label}</div>
+       </div>`
+    ).join('');
+    const statObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('pop'); statObserver.unobserve(e.target); }
+      });
+    }, { threshold: 0.25 });
+    grid.querySelectorAll('.stat-item').forEach(el => statObserver.observe(el));
+  }
+
+  // ===== MAP OBSERVER =====
+  const mapWrapper = document.getElementById('map-wrapper');
+  const mapObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); mapObserver.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  mapObserver.observe(mapWrapper);
+
   // ===== LOAD CONFIG =====
   async function loadConfig() {
     try {
@@ -733,6 +830,8 @@
       if (cfg.address) document.getElementById('info-address').textContent = cfg.address;
       if (cfg.phone) document.getElementById('info-phone').textContent = cfg.phone;
       if (cfg.hours) document.getElementById('info-hours').textContent = cfg.hours;
+
+      renderStats(cfg.stats);
 
       if (cfg.hero_image) {
         const bg = document.getElementById('hero-bg');
@@ -760,6 +859,7 @@
       renderSocial(cfg);
     } catch (e) {
       console.warn('Config load error:', e);
+      renderStats(null);
     }
   }
 
