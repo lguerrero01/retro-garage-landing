@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retro Garage</title>
+  <meta name="description" content="Retro Garage – Restaurante temático con la mejor comida y ambiente único">
+  <meta property="og:title" content="Retro Garage">
+  <meta property="og:description" content="Descubre nuestro menú y vive la experiencia retro">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #ed450d;
+      --blue:   #2a23b8;
+      --purple: #8624ce;
+      --yellow: #fac20a;
+      --dark:   #0f0f0f;
+      --gray:   #1a1a1a;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark);
+      color: #fff;
+      overflow-x: hidden;
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 3px; }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.3s, backdrop-filter 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(15,15,15,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: var(--orange);
+      letter-spacing: 2px;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: rgba(255,255,255,0.7);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+    .nav-cta {
+      background: var(--orange); color: #fff;
+      padding: 0.55rem 1.4rem; border-radius: 50px;
+      font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(237,69,13,0.4); }
+
+    /* ===== HERO ===== */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--dark) 0%, #1a0a2e 100%);
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      opacity: 0.25;
+      transition: opacity 0.8s;
+    }
+    .hero-bg.loaded { opacity: 0.35; }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, var(--dark) 100%);
+    }
+    /* 3D floating shapes */
+    .shape {
+      position: absolute; border-radius: 50%;
+      filter: blur(60px);
+      animation: float 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .shape-1 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(237,69,13,0.3), transparent);
+      top: -10%; left: -10%;
+      animation-delay: 0s;
+    }
+    .shape-2 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(42,35,184,0.4), transparent);
+      bottom: 10%; right: -5%;
+      animation-delay: -2s;
+    }
+    .shape-3 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(134,36,206,0.35), transparent);
+      top: 30%; right: 25%;
+      animation-delay: -4s;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.05); }
+    }
+    .hero-content {
+      position: relative; z-index: 1;
+      text-align: center; padding: 2rem;
+      max-width: 800px; margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(237,69,13,0.15); border: 1px solid rgba(237,69,13,0.3);
+      color: var(--orange); padding: 0.35rem 1rem;
+      border-radius: 50px; font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s 0.2s both;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 12vw, 9rem);
+      line-height: 0.9;
+      letter-spacing: 4px;
+      animation: fadeUp 0.6s 0.4s both;
+    }
+    .hero-title span { color: var(--orange); }
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: rgba(255,255,255,0.65);
+      margin-top: 1.2rem; max-width: 500px; margin-inline: auto;
+      font-weight: 400; line-height: 1.6;
+      animation: fadeUp 0.6s 0.6s both;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; justify-content: center;
+      flex-wrap: wrap; margin-top: 2.5rem;
+      animation: fadeUp 0.6s 0.8s both;
+    }
+    .btn-primary {
+      background: var(--orange); color: #fff;
+      padding: 0.9rem 2.2rem; border-radius: 50px;
+      font-weight: 700; font-size: 0.95rem; letter-spacing: 0.05em;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(237,69,13,0.45); }
+    .btn-ghost {
+      border: 1.5px solid rgba(255,255,255,0.25); color: #fff;
+      padding: 0.9rem 2.2rem; border-radius: 50px;
+      font-weight: 600; font-size: 0.95rem; letter-spacing: 0.05em;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.06); }
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: rgba(255,255,255,0.4); font-size: 0.75rem; letter-spacing: 0.1em;
+      text-transform: uppercase; animation: bounce 2s infinite;
+    }
+    .scroll-hint svg { width: 20px; height: 20px; }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ===== SECTION BASE ===== */
+    section { padding: 6rem 1.5rem; }
+    .section-tag {
+      display: inline-block;
+      color: var(--orange); font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      letter-spacing: 2px; line-height: 1;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* ===== STATS STRIP ===== */
+    #stats {
+      padding: 3rem 1.5rem;
+      background: linear-gradient(90deg, var(--orange), var(--purple), var(--blue));
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 2rem; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem; line-height: 1;
+    }
+    .stat-label { font-size: 0.8rem; font-weight: 600; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ===== MENU ===== */
+    #menu { background: var(--gray); }
+    .menu-header { text-align: center; margin-bottom: 3rem; }
+    .category-tabs {
+      display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 2.5rem;
+    }
+    .cat-tab {
+      padding: 0.45rem 1.2rem; border-radius: 50px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      background: transparent; color: rgba(255,255,255,0.6);
+      font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; letter-spacing: 0.04em;
+    }
+    .cat-tab.active, .cat-tab:hover {
+      background: var(--orange); border-color: var(--orange);
+      color: #fff;
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .menu-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      animation: fadeUp 0.5s both;
+    }
+    .menu-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.4);
+    }
+    .menu-card-img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover;
+      background: #222;
+    }
+    .menu-card-img-placeholder {
+      width: 100%; aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .menu-card-body { padding: 1.1rem 1.2rem 1.3rem; }
+    .menu-card-cat {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--orange); margin-bottom: 0.4rem;
+    }
+    .menu-card-name {
+      font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+    .menu-card-desc {
+      font-size: 0.82rem; color: rgba(255,255,255,0.5);
+      line-height: 1.5; margin-bottom: 0.9rem;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .menu-card-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem; color: var(--yellow);
+      letter-spacing: 1px;
+    }
+    .menu-loading {
+      text-align: center; padding: 4rem;
+      color: rgba(255,255,255,0.4); font-size: 0.9rem;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .unavailable-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4);
+      font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.6rem;
+      border-radius: 4px; margin-left: 0.5rem;
+    }
+
+    /* ===== ABOUT ===== */
+    #about {
+      background: var(--dark);
+    }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
+      align-items: center;
+    }
+    .about-img-wrap {
+      position: relative;
+    }
+    .about-img {
+      width: 100%; border-radius: 20px; object-fit: cover;
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #1a0a2e, #0f0f0f);
+    }
+    .about-img-placeholder {
+      width: 100%; border-radius: 20px;
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #1a0a2e, #0f0f0f);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+    }
+    .about-deco {
+      position: absolute; bottom: -20px; right: -20px;
+      width: 150px; height: 150px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--orange), var(--purple));
+      z-index: -1;
+      animation: float 5s ease-in-out infinite;
+    }
+    .about-text p {
+      color: rgba(255,255,255,0.65); line-height: 1.8; margin-top: 1.2rem;
+      font-size: 1rem;
+    }
+    .about-features {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem;
+    }
+    .feature-item {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+    }
+    .feature-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: rgba(237,69,13,0.15); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .feature-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .feature-sub { font-size: 0.75rem; color: rgba(255,255,255,0.45); }
+
+    /* ===== GALLERY ===== */
+    #gallery { background: var(--gray); }
+    .gallery-header { text-align: center; margin-bottom: 2.5rem; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+    .gallery-item {
+      aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+      cursor: pointer; position: relative;
+    }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.4s;
+    }
+    .gallery-item:hover img { transform: scale(1.08); }
+    .gallery-item::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(237,69,13,0.5), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .gallery-item:hover::after { opacity: 1; }
+    .gallery-empty {
+      grid-column: 1 / -1; text-align: center;
+      padding: 3rem; color: rgba(255,255,255,0.3); font-size: 0.9rem;
+    }
+
+    /* ===== INFO CARDS ===== */
+    #info { background: var(--dark); }
+    .info-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .info-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; padding: 1.8rem;
+      transition: border-color 0.3s;
+    }
+    .info-card:hover { border-color: var(--orange); }
+    .info-card-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+    .info-card-title { font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; color: rgba(255,255,255,0.6); }
+    .info-card-value { font-size: 0.95rem; line-height: 1.5; }
+
+    /* ===== SOCIAL ===== */
+    #social {
+      text-align: center;
+      background: linear-gradient(135deg, #1a0a2e, var(--dark));
+    }
+    .social-icons {
+      display: flex; justify-content: center; gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .social-btn {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: transform 0.2s, background 0.2s, border-color 0.2s;
+      font-size: 1.3rem;
+    }
+    .social-btn:hover { transform: translateY(-4px); background: var(--orange); border-color: var(--orange); }
+
+    /* ===== PLAYSTORE CTA ===== */
+    #download {
+      background: linear-gradient(135deg, var(--orange) 0%, #c13500 100%);
+      text-align: center; padding: 5rem 1.5rem; position: relative; overflow: hidden;
+    }
+    #download::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .download-content { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+    .download-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      letter-spacing: 3px; line-height: 1;
+    }
+    .download-sub { color: rgba(255,255,255,0.85); margin: 1rem 0 2.5rem; font-size: 1.05rem; }
+    .playstore-btn {
+      display: inline-flex; align-items: center; gap: 1rem;
+      background: #000; color: #fff;
+      padding: 1rem 2.2rem; border-radius: 14px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .playstore-btn:hover { transform: scale(1.04); box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+    .playstore-btn svg { width: 28px; height: 28px; }
+    .playstore-btn-text { text-align: left; }
+    .playstore-btn-text small { font-size: 0.7rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.05em; display: block; }
+    .playstore-btn-text strong { font-size: 1.15rem; letter-spacing: 0.02em; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #080808; padding: 2.5rem 1.5rem;
+      text-align: center; color: rgba(255,255,255,0.3);
+      font-size: 0.82rem; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    footer span { color: var(--orange); }
+
+    /* ===== LIGHTBOX ===== */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.92); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem; cursor: pointer;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .lightbox.open { opacity: 1; pointer-events: all; }
+    .lightbox img {
+      max-width: 90vw; max-height: 90vh; border-radius: 12px;
+      object-fit: contain; cursor: default;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+    }
+    .lightbox-close {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      background: rgba(255,255,255,0.1); border: none; color: #fff;
+      width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+      font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.2); }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-features { grid-template-columns: 1fr; }
+      section { padding: 4rem 1rem; }
+    }
+    @media (max-width: 480px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+      .menu-grid { grid-template-columns: 1fr; }
+      nav { padding: 0.8rem 1rem; }
+      .nav-cta span { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">RETRO GARAGE</div>
+  <div class="nav-links">
+    <a href="#menu">Menú</a>
+    <a href="#about">Nosotros</a>
+    <a href="#gallery">Galería</a>
+    <a href="#info">Contacto</a>
+  </div>
+  <a href="#download" class="nav-cta" id="nav-cta-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l4 4 4-4M12 8v8"/></svg>
+    <span>Descargar App</span>
+  </a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Restaurante Temático
+    </div>
+    <h1 class="hero-title" id="hero-title">RETRO<br><span>GARAGE</span></h1>
+    <p class="hero-sub" id="hero-tagline">La experiencia gastronómica con estilo retro</p>
+    <div class="hero-actions">
+      <a href="#menu" class="btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+        Ver Menú
+      </a>
+      <a href="#about" class="btn-ghost">Conocernos</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    Desplaza
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="container">
+    <div class="stats-grid" id="stats-grid">
+      <div><div class="stat-num">100+</div><div class="stat-label">Platillos únicos</div></div>
+      <div><div class="stat-num">5★</div><div class="stat-label">Calificación</div></div>
+      <div><div class="stat-num">Retro</div><div class="stat-label">Ambiente temático</div></div>
+      <div><div class="stat-num">App</div><div class="stat-label">Ordena desde tu mesa</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="container">
+    <div class="menu-header reveal">
+      <div class="section-tag">Nuestro menú</div>
+      <h2 class="section-title">PLATILLOS <span style="color:var(--orange)">DESTACADOS</span></h2>
+    </div>
+    <div class="category-tabs reveal" id="category-tabs"></div>
+    <div id="menu-grid" class="menu-grid">
+      <div class="menu-loading">
+        <div class="spinner"></div>
+        Cargando menú...
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-img-wrap reveal">
+        <div id="about-img-container">
+          <div class="about-img-placeholder">🍔</div>
+        </div>
+        <div class="about-deco"></div>
+      </div>
+      <div class="about-text reveal">
+        <div class="section-tag">Nuestra historia</div>
+        <h2 class="section-title">SOBRE <span style="color:var(--orange)">NOSOTROS</span></h2>
+        <p id="about-description">Somos un restaurante temático único donde la nostalgia se mezcla con sabores contemporáneos. Cada platillo es una experiencia que te transporta a otra era.</p>
+        <div class="about-features">
+          <div class="feature-item">
+            <div class="feature-icon">🍽️</div>
+            <div><div class="feature-label">Ambiente único</div><div class="feature-sub">Decoración retro auténtica</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">👨‍🍳</div>
+            <div><div class="feature-label">Chefs expertos</div><div class="feature-sub">Cocina con pasión</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📱</div>
+            <div><div class="feature-label">App propia</div><div class="feature-sub">Ordena desde tu mesa</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">⚡</div>
+            <div><div class="feature-label">Servicio rápido</div><div class="feature-sub">Atención de calidad</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="container">
+    <div class="gallery-header reveal">
+      <div class="section-tag">Galería</div>
+      <h2 class="section-title">NUESTRO <span style="color:var(--orange)">ESPACIO</span></h2>
+    </div>
+    <div class="gallery-grid reveal" id="gallery-grid">
+      <div class="gallery-empty">Las fotos de la galería aparecerán aquí pronto.</div>
+    </div>
+  </div>
+</section>
+
+<!-- INFO -->
+<section id="info">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="section-tag">Encuéntranos</div>
+      <h2 class="section-title">VISÍTANOS</h2>
+    </div>
+    <div class="info-grid reveal" id="info-grid">
+      <div class="info-card">
+        <div class="info-card-icon">📍</div>
+        <div class="info-card-title">Dirección</div>
+        <div class="info-card-value" id="info-address">Ciudad de México</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">📞</div>
+        <div class="info-card-title">Teléfono</div>
+        <div class="info-card-value" id="info-phone">+52 55 0000 0000</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">🕐</div>
+        <div class="info-card-title">Horario</div>
+        <div class="info-card-value" id="info-hours">Lun–Dom 12:00–23:00</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL -->
+<section id="social">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Síguenos</div>
+      <h2 class="section-title">REDES <span style="color:var(--orange)">SOCIALES</span></h2>
+    </div>
+    <div class="social-icons reveal" id="social-icons">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section id="download">
+  <div class="download-content">
+    <div class="section-tag" style="color:rgba(255,255,255,0.8)">App móvil</div>
+    <h2 class="download-title">ORDENA DESDE TU MESA</h2>
+    <p class="download-sub">Descarga nuestra app, explora el menú, personaliza tu pedido y disfruta sin esperas.</p>
+    <a id="playstore-btn" href="#" target="_blank" rel="noopener" class="playstore-btn">
+      <!-- Play Store icon -->
+      <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.18 23.76c.38.21.82.21 1.2 0l12.4-7.15L13.6 12l-10.42 11.76zm16.18-9.34L5.94.84C5.56.63 5.12.63 4.74.84L16.58 12l2.78 2.42zm2.6-6.77L18.04 5.8l-2.98 2.63 2.98 2.6 3.94-2.27a1.2 1.2 0 000-2.11zM3.18.24C2.8.45 2.56.85 2.56 1.26v21.48c0 .41.24.8.62 1.02L14.4 12 3.18.24z"/>
+      </svg>
+      <div class="playstore-btn-text">
+        <small>Disponible en</small>
+        <strong>Google Play</strong>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 <span>Retro Garage</span>. Todos los derechos reservados.</p>
+  <p style="margin-top:0.4rem; font-size:0.75rem">Hecho con ❤️ — Gestiona tu restaurante con nuestra <a href="#download" style="color:var(--orange)">app</a></p>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script type="module">
+  // ===== SUPABASE CONFIG =====
+  const SUPABASE_URL = 'https://icdlmgzihgfkesfutfxn.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZGxtZ3ppaGdma2VzZnV0ZnhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNDA3MDgsImV4cCI6MjA5NDYxNjcwOH0._UUv371Q9FhptrcLGfAwWLzGYzXkfK8IH8dF_sUoYSM';
+
+  async function supaFetch(path, opts = {}) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      ...opts,
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        ...opts.headers
+      }
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  // ===== SCROLL NAV =====
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ===== REVEAL OBSERVER =====
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+  // ===== LOAD CONFIG =====
+  async function loadConfig() {
+    try {
+      const data = await supaFetch('restaurant_config?id=eq.main&select=*');
+      const cfg = data[0] || {};
+
+      if (cfg.name) document.title = cfg.name;
+      if (cfg.tagline) document.getElementById('hero-tagline').textContent = cfg.tagline;
+      if (cfg.description) document.getElementById('about-description').textContent = cfg.description;
+      if (cfg.address) document.getElementById('info-address').textContent = cfg.address;
+      if (cfg.phone) document.getElementById('info-phone').textContent = cfg.phone;
+      if (cfg.hours) document.getElementById('info-hours').textContent = cfg.hours;
+
+      if (cfg.hero_image) {
+        const bg = document.getElementById('hero-bg');
+        bg.style.backgroundImage = `url('${cfg.hero_image}')`;
+        const img = new Image();
+        img.onload = () => bg.classList.add('loaded');
+        img.src = cfg.hero_image;
+      }
+
+      if (cfg.about_image) {
+        document.getElementById('about-img-container').innerHTML =
+          `<img class="about-img" src="${cfg.about_image}" alt="Retro Garage" loading="lazy">`;
+      }
+
+      if (cfg.gallery_images && cfg.gallery_images.length > 0) {
+        renderGallery(cfg.gallery_images);
+      }
+
+      if (cfg.playstore_url) {
+        document.getElementById('playstore-btn').href = cfg.playstore_url;
+        document.getElementById('nav-cta-btn').href = cfg.playstore_url;
+        document.getElementById('nav-cta-btn').target = '_blank';
+      }
+
+      renderSocial(cfg);
+    } catch (e) {
+      console.warn('Config load error:', e);
+    }
+  }
+
+  function renderSocial(cfg) {
+    const container = document.getElementById('social-icons');
+    const links = [];
+    if (cfg.instagram_url) links.push({ url: cfg.instagram_url, icon: '📸', label: 'Instagram' });
+    if (cfg.facebook_url) links.push({ url: cfg.facebook_url, icon: '📘', label: 'Facebook' });
+    if (cfg.playstore_url) links.push({ url: cfg.playstore_url, icon: '▶️', label: 'Play Store' });
+    if (!links.length) { container.style.display = 'none'; return; }
+    container.innerHTML = links.map(l =>
+      `<a href="${l.url}" target="_blank" rel="noopener" class="social-btn" title="${l.label}">${l.icon}</a>`
+    ).join('');
+  }
+
+  function renderGallery(images) {
+    const grid = document.getElementById('gallery-grid');
+    grid.innerHTML = images.map(url =>
+      `<div class="gallery-item" onclick="openLightbox('${url}')">
+         <img src="${url}" alt="Galería Retro Garage" loading="lazy">
+       </div>`
+    ).join('');
+  }
+
+  // ===== LOAD MENU =====
+  let allItems = [];
+  let activeCategory = 'all';
+
+  async function loadMenu() {
+    try {
+      const data = await supaFetch('products?is_available=eq.true&select=*&order=name.asc');
+      allItems = data.map(p => ({
+        id: p.id,
+        name: p.name,
+        description: p.description || '',
+        price: p.price,
+        category: p.category || 'General',
+        image: p.images && p.images[0] ? p.images[0] : '',
+        available: p.is_available
+      }));
+      renderCategoryTabs();
+      renderMenu();
+    } catch (e) {
+      document.getElementById('menu-grid').innerHTML =
+        '<div class="menu-loading">No se pudo cargar el menú. Intenta más tarde.</div>';
+    }
+  }
+
+  function renderCategoryTabs() {
+    const cats = ['all', ...new Set(allItems.map(i => i.category).filter(Boolean))];
+    const container = document.getElementById('category-tabs');
+    container.innerHTML = cats.map(cat =>
+      `<button class="cat-tab ${cat === activeCategory ? 'active' : ''}"
+               onclick="filterCategory('${cat}')">
+         ${cat === 'all' ? 'Todos' : cat}
+       </button>`
+    ).join('');
+  }
+
+  function renderMenu() {
+    const items = activeCategory === 'all'
+      ? allItems
+      : allItems.filter(i => i.category === activeCategory);
+    const grid = document.getElementById('menu-grid');
+    if (!items.length) {
+      grid.innerHTML = '<div class="menu-loading">Sin platillos en esta categoría.</div>';
+      return;
+    }
+    grid.innerHTML = items.map((item, idx) => `
+      <div class="menu-card" style="animation-delay:${idx * 0.05}s">
+        ${item.image
+          ? `<img class="menu-card-img" src="${item.image}" alt="${item.name}" loading="lazy">`
+          : `<div class="menu-card-img-placeholder">🍽️</div>`}
+        <div class="menu-card-body">
+          <div class="menu-card-cat">${item.category}</div>
+          <div class="menu-card-name">${item.name}${!item.available ? '<span class="unavailable-tag">No disponible</span>' : ''}</div>
+          <div class="menu-card-desc">${item.description}</div>
+          <div class="menu-card-price">$${item.price.toFixed(2)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  window.filterCategory = function(cat) {
+    activeCategory = cat;
+    renderCategoryTabs();
+    renderMenu();
+  };
+
+  // ===== LIGHTBOX =====
+  window.openLightbox = function(url) {
+    document.getElementById('lightbox-img').src = url;
+    document.getElementById('lightbox').classList.add('open');
+  };
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+  document.getElementById('lightbox-close').addEventListener('click', () => {
+    document.getElementById('lightbox').classList.remove('open');
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+  });
+
+  // ===== INIT =====
+  loadConfig();
+  loadMenu();
+</script>
+
+</body>
+</html>
